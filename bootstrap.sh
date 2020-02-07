@@ -5,6 +5,6 @@ curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compos
 chmod +x /usr/local/bin/docker-compose
 
 git clone --single-branch --branch Jean_EC2test https://github.com/JeanFraga/TaggerDocker
-cd taggerDocker
+cd TaggerDocker
 
 sudo docker-compose up --build
