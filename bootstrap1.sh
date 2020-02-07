@@ -6,6 +6,5 @@ chmod +x /usr/local/bin/docker-compose
 
 git clone https://github.com/JeanFraga/TaggerDocker
 cd TaggerDocker
-echo "hello world"
 
 sudo docker-compose up --build
