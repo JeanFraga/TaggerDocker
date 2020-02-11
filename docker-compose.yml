@@ -1,5 +1,12 @@
-version: '3.7'
+version: '3'
 services:
+    redis:
+        image: 'redis:latest'
+        # command:
+        volumes:
+            - web-data:/home/ubuntu/app/
+        ports:
+            - 6379:6379
     flask:
         build: ./flask
         container_name: flask
@@ -8,6 +15,11 @@ services:
             - 80:80
         volumes:
             - web-data:/home/ubuntu/app/
+    celery:
+        build: ./flask
+        command : celery worker -l info -A flask.celery
+        volumes:
+            - '.:/flask'
 
 volumes:
     web-data:
