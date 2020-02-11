@@ -18,8 +18,8 @@ ENV PYTHONUNBUFFERED 1
 RUN python3 -m pip install --no-binary :all: psycopg2 && \
     python3 -m pip install Flask Flask_SQLAlchemy \
     scikit-learn beautifulsoup4 \
-    numpy python_decouple click\
-    python_dotenv requests psycopg2-binary \
+    numpy python-decouple click\
+    python-dotenv requests psycopg2-binary \
     lxml pandas basilica gunicorn celery
 
 COPY . .
