@@ -10,36 +10,42 @@ services:
             - 80:80
         volumes:
             - web-data:/home/ubuntu/app/
-        links:
-            - redis
-            - celery
-    celery:
-        build: ./flask
-        command : celery worker -l info -A flask.celery
-        volumes:
-            - '.:/flask'
-        links:
-            - redis
-        depends_on:
-            - redis
-        container_name: cl01
-    redis:
-        image: 'redis:latest'
-        # command:
-        # volumes:
-        #     - web-data:/home/ubuntu/app/
-        container_name: rd01
-        # ports:
-        #     - 6379:6379
-    # postgres:
-    #     restart: always
-    #     image: postgres:latest
-    #     container_name: postgres
+        # links:
+            # - redis
+            # - celery
+            # - postgres
+        # depends_on:
+        #     - postgres
+    # celery:
+    #     build: ./flask
+    #     command : celery worker -l info -A flask.celery
     #     volumes:
-    #     - db-data:/home/ubuntu/app/
+    #         - '.:/flask'
+    #     links:
+    #         - redis
+    #     depends_on:
+    #         - redis
+    #     container_name: cl01
+    # redis:
+    #     image: 'redis:latest'
+    #     # command:
+    #     volumes:
+    #         - web-data:/home/ubuntu/app/
+    #     container_name: rd01
     #     ports:
-    #     - "5432:5432"
+    #         - 6379:6379
+    postgres:
+        env_file:
+            - .env
+        restart: always
+        image: postgres:latest
+        container_name: postgres
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+        # command: --name postgres-container -e POSTGRES_PASSWORD=password -it -p :5432 postgres
 
 volumes:
     web-data:
-    # db-data:
+    db-data:
