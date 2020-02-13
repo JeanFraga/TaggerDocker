@@ -58,7 +58,7 @@ def create_app():
         pkl = file_obj.getvalue()
 
         # Check if user already exists
-        db_user = DB.session.query(exists().where(User.email_address == j["address"])).scalar()
+        db_user = User.query.filter(User.email_address == j["address"]).scalar()
         if db_user: 
             # Update pickle if user exists
             db_user.pickle_file = pkl
@@ -77,7 +77,7 @@ def create_app():
         df = pd.DataFrame(data=j["emails"])
 
         # Check if user already exists
-        db_user = DB.session.query(exists().where(User.email_address == j["address"])).scalar()
+        db_user = User.query.filter(User.email_address == j["address"]).scalar()
         if db_user: 
             # Load pickle and get predictions
             basilica_client.df = df
