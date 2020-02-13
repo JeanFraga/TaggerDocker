@@ -9,6 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import pickle
 from db import DB, User
 from decouple import config
+import joblib
 from dotenv import load_dotenv
 from io import BytesIO
 from sqlalchemy import exists
@@ -69,26 +70,26 @@ def create_app():
         file_obj.close()
         return "Trained a model!"
 
-        @app.route("/predict", methods=["GET"])
-        def predict():
-            # Get JSON and convert to DataFrame
-            j = json.loads(request.data)
-            df = pd.DataFrame(data=j["emails"])
+    @APP.route("/predict", methods=["POST"])
+    def predict():
+        # Get JSON and convert to DataFrame
+        j = json.loads(request.data)
+        df = pd.DataFrame(data=j["emails"])
 
-            # Check if user already exists
-            db_user = DB.session.query(exists().where(User.email_address == j["address"])).scalar()
-            if db_user: 
-                # Load pickle and get predictions
-                basilica_client.df = df
-                df = basilica_client.embed_basilica_to_df()
-                file_obj = BytesIO(db_user.pickle_file)
-                pkl = joblib.load(file_obj)
-                res = pkl.kneighbors(np.vstack(np.array(df['embedded'])), n_neighbors=5)[1][0]
-                file_obj.close()
-                return json.dumps({"prediction": [str(i) for i in res]})
-            else:
-                # Return error
-                return "No model in database for {}...".format(j["address"])
+        # Check if user already exists
+        db_user = DB.session.query(exists().where(User.email_address == j["address"])).scalar()
+        if db_user: 
+            # Load pickle and get predictions
+            basilica_client.df = df
+            df = basilica_client.embed_basilica_to_df()
+            file_obj = BytesIO(db_user.pickle_file)
+            pkl = joblib.load(file_obj)
+            res = pkl.kneighbors(np.vstack(np.array(df['embedded'])), n_neighbors=5)[1][0]
+            file_obj.close()
+            return json.dumps({"prediction": [str(i) for i in res]})
+        else:
+            # Return error
+            return "No model in database for {}...".format(j["address"])
     
 
 
