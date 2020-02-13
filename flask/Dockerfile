@@ -20,7 +20,7 @@ RUN python3 -m pip install --no-binary :all: psycopg2 && \
     scikit-learn beautifulsoup4 \
     numpy python-decouple click \
     python-dotenv requests psycopg2-binary \
-    lxml pandas basilica gunicorn
+    lxml pandas basilica gunicorn celery
 
 COPY . .
 
