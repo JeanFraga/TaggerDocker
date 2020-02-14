@@ -1,34 +1,37 @@
 # Imports
 from .classes.new_email_functions import IMap
 from .classes.basilica_functions import BasilicaAPI
+from db import DB, User
+
 from flask import Flask, request, jsonify
 import json
 import pandas as pd
 import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 import pickle
-from db import DB, User
 from decouple import config
 import joblib
 from dotenv import load_dotenv
 from io import BytesIO
 from sqlalchemy import exists
-# load_dotenv()
 
 def create_app():
     APP = Flask(__name__)
     APP.config["SQLALCHEMY_DATABASE_URI"] = config("DATABASE_URL")
     APP.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     DB.init_app(APP)
-    with APP.app_context():
-        DB.drop_all()
-        DB.create_all()
+    # This lines can be enabled for testing locally but in production will erase the database every time you start up flask.
+    # We opt to use the click package to make a cli that will allow us to run this once.
+    # with APP.app_context():
+    #     DB.drop_all()
+    #     DB.create_all()
     basilica_client = BasilicaAPI()
 
     @APP.route('/', methods=['GET'])
     def test():
         return "Hello World!"
 
+    # This lines can be enabled for testing locally but in production will erase the database if the web or anyone has access to /reset.
     # @APP.route('/reset')
     # def reset():
     #     DB.drop_all()

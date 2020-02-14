@@ -1,14 +1,16 @@
 import click
 
-from sqlalchemy_utils import database_exists, create_database
+# from sqlalchemy_utils import database_exists, create_database
 
-#figure out where snakeeeyes comes from
-from snakeeyes.app import create_app
-from snakeeyes.extensions import db
+# figure out where snakeeeyes comes from
+# 
+from tagger.application import create_app
+# from snakeeyes.extensions import db
+from db import DB, User
 
 # Create an app context for the database connection.
 app = create_app()
-db.app = app
+DB.app = app
 
 
 @click.group()
@@ -18,18 +20,14 @@ def cli():
 
 
 @click.command()
-@click.option('--with-testdb/--no-with-testdb', default=False,
-              help='Create a test db too?')
 def init():
-    db.drop_all()
-    db.create_all()
+    DB.drop_all()
+    DB.create_all()
 
     return None
 
 
 @click.command()
-@click.option('--with-testdb/--no-with-testdb', default=False,
-              help='Create a test db too?')
 @click.pass_context
 def reset(ctx):
 
