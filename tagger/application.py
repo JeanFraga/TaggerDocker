@@ -1,7 +1,7 @@
 # Imports
 from classes.new_email_functions import IMap
 from classes.basilica_functions import BasilicaAPI
-from db import DB, User
+from .db import DB, User
 
 from flask import Flask, request, jsonify
 import json
