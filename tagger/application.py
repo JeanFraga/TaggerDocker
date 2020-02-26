@@ -27,21 +27,27 @@ def create_app():
     #     DB.create_all()
     basilica_client = BasilicaAPI()
 
-    @APP.route('/', methods=['GET'])
-    def test():
-        return "Hello World!"
 
     # This lines can be enabled for testing locally but in production will erase the database if the web or anyone has access to /reset.
-    # @APP.route('/reset')
-    # def reset():
-    #     DB.drop_all()
-    #     DB.create_all()
-    #     return "reset database"
+    @APP.route('/resetvbvnpjtzmndypmrosuuvqxqugtaburqm')
+    def reset():
+        DB.drop_all()
+        DB.create_all()
+        return "reset database"
     
     @APP.route('/train_model', methods=["POST"])
     def train_model():
         # Get JSON and convert to DataFrame
-        j = json.loads(request.data)
+        data = b""
+        while True:
+            chunk = request.stream.read(4096)
+            if len(chunk) == 0:
+                break
+            data += chunk
+        try:
+            j = json.loads(data.decode("utf-8"))
+        except Exception as e:
+            return "Could not process input stream."
         df = pd.DataFrame(data=j["emails"])
 
         # Embed emails
@@ -72,28 +78,6 @@ def create_app():
         DB.session.commit()
         file_obj.close()
         return "Trained a model!"
-
-    @APP.route("/predict", methods=["POST"])
-    def predict():
-        # Get JSON and convert to DataFrame
-        j = json.loads(request.data)
-        df = pd.DataFrame(data=j["emails"])
-
-        # Check if user already exists
-        db_user = User.query.filter(User.email_address == j["address"]).scalar()
-        if db_user: 
-            # Load pickle and get predictions
-            basilica_client.df = df
-            df = basilica_client.embed_basilica_to_df()
-            file_obj = BytesIO(db_user.pickle_file)
-            pkl = joblib.load(file_obj)
-            res = pkl.kneighbors(np.vstack(np.array(df['embedded'])), n_neighbors=5)[1][0]
-            file_obj.close()
-            return json.dumps({"prediction": [str(i) for i in res]})
-        else:
-            # Return error
-            return "No model in database for {}...".format(j["address"])
-    
 
 
     return APP
